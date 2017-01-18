@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/NodejsWebApp1/.vs/NodejsWebApp1/v14
+/NodejsWebApp1/bin
