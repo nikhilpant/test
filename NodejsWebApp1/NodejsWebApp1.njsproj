@@ -32,6 +32,8 @@
   <ItemGroup>
     <Compile Include="myApp.js" />
     <Compile Include="server.js" />
+    <Compile Include="workspace.js" />
+    <Content Include="License.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config" />
     <Content Include="bin\ChangeConfig.ps1" />
