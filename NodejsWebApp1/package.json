@@ -2,8 +2,15 @@
   "name": "nodejs-web-app1",
   "version": "0.0.0",
   "description": "NodejsWebApp1",
-  "main": "server.js",
+  "main": "app.js",
   "author": {
     "name": "nikhil.pant"
-  }
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "lodash": "^2.4.1",
+    "serve-static": "^1.7.0"
+  },
+  "devDependencies": {}
 }
