@@ -27,13 +27,32 @@ app.use(bodyParser.urlencoded({
 
 // Set up a simple route
 app.get('/', function (req, res) {
-    debug("/ requested");
     res.send('Hello World! express');
 });
 
+//var setJsonResponse = function(res, status, msg) {
+//    res.setHeader('content-type', 'application/json');
+//    res.status(status).send(msg);
+//}
+
+// adding custom functions to response 
+app.use(function (req, res, next) {
+    res.setInvalidInput = function () {
+        return res.status(400).jsonp({ "message": "Invalid input" });
+    };
+    res.setError = function (errorMsg) {
+        return res.status(400).jsonp({ "message": error});
+    };
+    res.setJson = function (json) {
+        return res.status(200).jsonp(json);
+    };
+
+    next();
+});
+
+
 // Get person list
 var getAllPersons = function (req, res) {
-    debug("getAllPersons Called:");
     var response = personData;
     res.send(JSON.stringify(response));
 };
@@ -41,23 +60,20 @@ app.get('/persons', getAllPersons);
 
 // get person by id
 var getPerson = function (req, res) {
-    debug("getPersonCalled:", req.person);
     if (req.person) {
-        res.send(200, JSON.stringify(req.person));
+        res.setJson(req.person);
     }
     else {
-        res.send(400, { message: "Unrecognized identifier: " + identifier });
+        res.setError("Unrecognized identifier: " + identifier);
     }
 };
 app.get('/persons/:personId', getPerson);
 
 // parameter processing
 app.param('personId', function (req, res, next, personId) {
-    debug("personId found:", personId);
     var person = _.find(personData, function (it) {
         return personId == it.id;
     });
-    debug("person:", person);
     req.person = person;
     next();
 });
@@ -65,17 +81,12 @@ app.param('personId', function (req, res, next, personId) {
 // delete person
 var deletePerson = function (req, res) {
     if (req.person) {
-        debug("Removing", req.person.firstName, req.person.lastName);
-        _.remove(personData, function (it) {
+        _.remove(personData, function(it) {
             return it.id === req.person.id;
         });
-        debug("personData=", personData);
-        var response = { message: "Deleted successfully" };
-        res.status(200).jsonp(response);
-    }
-    else {
-        var response = { message: "Unrecognized person identifier" };
-        res.status(404).jsonp(response);
+        res.setJson({ message: "Deleted successfully" });
+    } else {
+        res.setError("Unrecognized person identifier" + req.person.id);
     }
 };
 
@@ -84,10 +95,9 @@ app.delete('/persons/:personId', deletePerson);
 // insert a person
 var insertPerson = function (req, res) {
     var person = req.body;
-    debug("Received", JSON.stringify(req.body));
     person.id = personData.length + 1;
     personData.push(person);
-    res.status(200).jsonp(person);
+    res.setJson(person);
 };
 app.post('/persons', insertPerson);
 
@@ -97,13 +107,14 @@ var updatePerson = function (req, res) {
         var originalPerson = req.person;
         var incomingPerson = req.body;
         var newPerson = _.merge(originalPerson, incomingPerson);
-        res.status(200).jsonp(newPerson);
+        res.setJson(newPerson);
     }
     else {
-        res.status(404).jsonp({ message: "Unrecognized person identifier" });
+        res.setError("Unrecognized person identifier");
     }
 };
 app.put('/persons/:personId', updatePerson);
+
 
 // Start the server
 var port = process.env.PORT || 3000;

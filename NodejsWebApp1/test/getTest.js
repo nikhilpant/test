@@ -3,7 +3,7 @@ var express = require('express');
 var assert = require('assert');
 var should = require('should');
 var debug = require('debug')('app');
-describe('Baseline tests', function () {
+describe.skip('Baseline tests', function () {
     describe('#indexOf()', function () {
         it('should return -1 when the value is not present', function () {
             debug([1, 2, 3].indexOf(3));
